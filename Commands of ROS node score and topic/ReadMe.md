@@ -34,6 +34,14 @@ rostopic echo /turtle1/cmd_vel
 # Feed topic messsage via terminal
 rostopic pub -1 /turtle1/cmd_vel geometry_msgs/Twist -- '[2.0, 0.0, 0.0]' '[0.0, 0.0, 1.8]'
 
+# Change default python to python3
+alias python=python3
+
+source ~/.bashrc
+
+pip3 install rospkg
+
+
 # See the real time graph of whats running
 rosrun rqt_graph rqt_graph
 ```
