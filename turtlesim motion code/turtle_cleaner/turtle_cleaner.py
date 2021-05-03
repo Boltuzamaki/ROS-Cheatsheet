@@ -34,15 +34,16 @@ def move(speed, distance, is_forward):
 
     distance_moved = 0.0
     loop_rate = rospy.Rate(10) # Publish at a rate of 10 times a second
-    cmd_vel_topic = '/turtle1/cmd_vel'
+    cmd_vel_topic = '/cmd_vel'
     velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
-
+    t0 = rospy.Time.now().to_sec()
     while True:
-        rospy.loginfo("Turtlesim moves forwards")
+        rospy.loginfo("Turtlebot moves forwards")
+        t1 = rospy.Time.now().to_sec()
         velocity_publisher.publish(velocity_message)
         loop_rate.sleep()
 
-        distance_moved = distance_moved + abs(math.sqrt(((x - x0) **2 + (y - y0) **2)))
+        distance_moved = (t1-t0)*speed
         print(distance_moved)
         if not (distance_moved < distance):
             rospy.loginfo("reached")
@@ -72,13 +73,13 @@ def rotate(angular_speed_degree, relative_angle_degree, clockwise):
 
     angle_moved = 0.0
     loop_rate = rospy.Rate(10)
-    cmd_vel_topic = '/turtle1/cmd_vel'
+    cmd_vel_topic = '/cmd_vel'
     velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
     t0 = rospy.Time.now().to_sec()
 
     while True:
 
-        rospy.loginfo("Turtlesim roatate")
+        rospy.loginfo("Turtlebot roatate")
         velocity_publisher.publish(velocity_message)
 
         t1 = rospy.Time.now().to_sec()
@@ -93,49 +94,18 @@ def rotate(angular_speed_degree, relative_angle_degree, clockwise):
     velocity_message.angular.z = 0
     velocity_publisher.publish(velocity_message)
 
-def go_to_goal(x_goal, y_goal):
-    global x, y, yaw
-
-    velocity_message = Twist()
-    cmd_vel_topic = 'turtle1/cmd_vel'
-
-    while True:
-        K_linear = 0.5
-        distance = abs(math.sqrt(((x_goal-x)**2 + (y_goal - y)** 2)))
-
-        linear_speed = distance * K_linear
-
-        K_angular = 4.0
-        desired_angle_goal = math.atan2(y_goal - y, x_goal - x)
-        angular_speed = (desired_angle_goal - yaw)*K_angular
-
-        velocity_message.linear.x = linear_speed
-        velocity_message.angular.z = angular_speed
-
-        velocity_publisher.publish(velocity_message)
-        print(f"x : {x}, y : {y}")
-
-        if distance < 0.01:
-            break
-        velocity_message.linear.x = 0
-        velocity_message.angular.z = 0
-
 if __name__ == "__main__":
     try:
-        rospy.init_node('turtlesim_motion_pose', anonymous=True)
+        rospy.init_node('turtlebot_motion_pose', anonymous=True)
 
         # declear velocity publisher
-        cmd_vel_topic = 'turtle1/cmd_vel'
+        cmd_vel_topic = '/cmd_vel'
         velocity_publisher = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
 
-        # declear position subscriber
-        position_topic = 'turtle1/pose'
-        pose_subscriber = rospy.Subscriber(position_topic, Pose, poseCallback)
-        time.sleep(2)
 
-        #move(1.0, 2.0, False)
-        #rotate(30, 60, True)
-        go_to_goal(10.0, 4.0)
+        move(1.0, 2.0, False)
+        rotate(30, 60, True)
+
 
     except rospy.ROSInterruptException:
         rospy.loginfo("node terminated.")
