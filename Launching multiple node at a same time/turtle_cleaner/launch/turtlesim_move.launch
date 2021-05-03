@@ -1,0 +1,10 @@
+<launch>
+
+  <include file="$(find turtle_cleaner)/launch/turtlesim_teleop.launch" />
+
+  <param name="x_goal" value="1.0" />
+  <param name="y_goal" value="1.0" />
+
+  <node pkg="turtle_cleaner" type="turtle_cleaner.py" name="cleaner_bot" output="screen" />
+
+</launch>
